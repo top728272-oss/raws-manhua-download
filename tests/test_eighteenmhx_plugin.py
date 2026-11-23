@@ -160,9 +160,7 @@ async def test_get_pages_uses_data_cs_not_href() -> None:
 
     pages = await plugin.get_pages(chapter)
 
-    fetcher.get_text.assert_awaited_once_with(
-        "https://m.18mhx.com/chapter/getcontent?m=34&c=35880"
-    )
+    fetcher.get_text.assert_awaited_once_with("https://m.18mhx.com/chapter/getcontent?m=34&c=35880")
     # 0-based, deduped, and ordered — each page appears as a lazyload wrapper
     # plus a real <img>, so a naive scan would emit every page twice.
     assert [p.index for p in pages] == [0, 1, 2]

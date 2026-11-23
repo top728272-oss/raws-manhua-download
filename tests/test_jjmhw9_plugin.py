@@ -152,10 +152,7 @@ def test_parse_search_dedupes_and_filters() -> None:
     results = plugin._parse_search(SEARCH_HTML, "民宿")
     assert [r.ref for r in results] == ["1068"]
     assert results[0].title == "民宿精營中"
-    assert (
-        results[0].cover_url
-        == "https://www.jjmhw9.top/static/upload/book/1068/cover.jpg"
-    )
+    assert results[0].cover_url == "https://www.jjmhw9.top/static/upload/book/1068/cover.jpg"
 
     # No query -> everything, covers absolutised, still one entry per book.
     all_results = plugin._parse_search(SEARCH_HTML)

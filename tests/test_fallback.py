@@ -198,9 +198,7 @@ class FakePlugin(SourcePlugin):
 
 
 def _other_plugin(pid: str = "other", **kwargs) -> FakePlugin:
-    results = kwargs.pop(
-        "results", [SearchResult(source_id=pid, title="斗破苍穹", ref="dou-po")]
-    )
+    results = kwargs.pop("results", [SearchResult(source_id=pid, title="斗破苍穹", ref="dou-po")])
     chapters = kwargs.pop("chapters", [_chapter("第1话", 1), _chapter("第2话", 2)])
     return FakePlugin(pid, results=results, chapters=chapters, **kwargs)
 

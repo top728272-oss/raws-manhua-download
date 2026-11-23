@@ -27,7 +27,10 @@ def test_resolve_referer_unknown_source() -> None:
 
 def test_worker_build_headers_with_referer() -> None:
     worker = CoverWorker(
-        "https://x/y.jpg", None, user_agent="UA-test", referer="https://site.com"  # type: ignore[arg-type]
+        "https://x/y.jpg",
+        None,
+        user_agent="UA-test",
+        referer="https://site.com",  # type: ignore[arg-type]
     )
     assert worker.build_headers() == {"User-Agent": "UA-test", "Referer": "https://site.com"}
 

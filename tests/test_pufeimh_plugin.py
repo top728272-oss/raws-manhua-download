@@ -26,9 +26,7 @@ from app.plugins.pufeimh import (
 FIXTURES = Path(__file__).parent / "fixtures"
 
 REAL_BLOB_URL = "https://c-nd3-1.6wm.top/coco/8522/example-22815/0_2.webp"
-_PROXY_SEGMENT = (
-    "aHR0cHM6Ly9jLW5kMy0xLjZ3bS50b3AvY29jby84NTIyL2V4YW1wbGUtMjI4MTUvMF8yLndlYnA="
-)
+_PROXY_SEGMENT = "aHR0cHM6Ly9jLW5kMy0xLjZ3bS50b3AvY29jby84NTIyL2V4YW1wbGUtMjI4MTUvMF8yLndlYnA="
 _SLUG = "shuohuangdexiaogouhuibeichidiaode"
 
 
@@ -264,7 +262,9 @@ def test_parse_detail() -> None:
 def test_parse_detail_falls_back_to_search_cover() -> None:
     detail = _plugin()._parse_detail(
         "<html><body><h1>nothing here</h1></body></html>",
-        SearchResult(source_id="pufeimh", title="fallback title", ref="x", cover_url="https://c/x.webp"),
+        SearchResult(
+            source_id="pufeimh", title="fallback title", ref="x", cover_url="https://c/x.webp"
+        ),
         "x",
     )
 

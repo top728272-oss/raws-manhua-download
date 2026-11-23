@@ -10,7 +10,9 @@ from app.plugins.one99mh import One99MhPlugin, _clean_ref, _unpack_epub
 
 def test_clean_ref() -> None:
     assert _clean_ref("wZhzbI8SqXnfeBjN9T9b1w") == "wZhzbI8SqXnfeBjN9T9b1w"
-    assert _clean_ref("https://www.199mh.org/comic/wZhzbI8SqXnfeBjN9T9b1w") == "wZhzbI8SqXnfeBjN9T9b1w"
+    assert (
+        _clean_ref("https://www.199mh.org/comic/wZhzbI8SqXnfeBjN9T9b1w") == "wZhzbI8SqXnfeBjN9T9b1w"
+    )
     assert _clean_ref("/comic/wZhzbI8SqXnfeBjN9T9b1w") == "wZhzbI8SqXnfeBjN9T9b1w"
     assert _clean_ref("黄道极日") == "黄道极日"
 
@@ -149,7 +151,9 @@ def test_unpack_epub_spine_order() -> None:
                 f'<html><body><img src="../images/p{n:03d}.jpg"/></body></html>',
             )
             manifest += f'<item id="p{n}" href="images/p{n:03d}.jpg" media-type="image/jpeg"/>'
-            manifest += f'<item id="c{n}" href="text/ch{n}.xhtml" media-type="application/xhtml+xml"/>'
+            manifest += (
+                f'<item id="c{n}" href="text/ch{n}.xhtml" media-type="application/xhtml+xml"/>'
+            )
             spine += f'<itemref idref="c{n}"/>'
         zf.writestr(
             "OEBPS/content.opf",

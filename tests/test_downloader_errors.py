@@ -72,9 +72,7 @@ def _pages(count: int = 3, prefix: str = "https://img.example") -> list[Page]:
 
 
 def _task(title: str = "斗破苍穹", chapter_title: str = "第1话") -> DownloadTask:
-    chapter = Chapter(
-        source_id="broken", manga_ref="ref", title=chapter_title, ref="c1", index=1
-    )
+    chapter = Chapter(source_id="broken", manga_ref="ref", title=chapter_title, ref="c1", index=1)
     return DownloadTask(
         source_id="broken",
         manga_title=title,
@@ -181,9 +179,7 @@ async def test_5xx_images_fall_back_to_another_source(tmp_path) -> None:
     async def resolver(_chapter: Chapter) -> list[Page]:
         return _pages()
 
-    task, summary = await _run(
-        tmp_path, FakeFetcher(behaviour), resolver, fallback=stub
-    )
+    task, summary = await _run(tmp_path, FakeFetcher(behaviour), resolver, fallback=stub)
 
     assert stub.calls == [("斗破苍穹", "第1话", "broken")]
     assert task.status == "done"
@@ -212,9 +208,7 @@ async def test_resolve_pages_5xx_falls_back_to_another_source(tmp_path) -> None:
     async def resolver(_chapter: Chapter) -> list[Page]:
         raise _status_error(500, "https://api.example/chapter/1")
 
-    task, summary = await _run(
-        tmp_path, FakeFetcher(lambda url: b"DATA"), resolver, fallback=stub
-    )
+    task, summary = await _run(tmp_path, FakeFetcher(lambda url: b"DATA"), resolver, fallback=stub)
 
     assert task.status == "done"
     assert task.pages_saved == 2
@@ -229,9 +223,7 @@ async def test_fallback_is_not_used_when_images_arrive(tmp_path) -> None:
     async def resolver(_chapter: Chapter) -> list[Page]:
         return _pages(2)
 
-    task, summary = await _run(
-        tmp_path, FakeFetcher(lambda url: b"DATA"), resolver, fallback=stub
-    )
+    task, summary = await _run(tmp_path, FakeFetcher(lambda url: b"DATA"), resolver, fallback=stub)
 
     assert stub.calls == []
     assert task.status == "done" and task.pages_saved == 2
@@ -318,9 +310,7 @@ async def test_missing_page_is_taken_from_another_source(tmp_path) -> None:
     async def resolver(_chapter: Chapter) -> list[Page]:
         return _pages(3)
 
-    task, summary = await _run(
-        tmp_path, FakeFetcher(behaviour), resolver, fallback=stub
-    )
+    task, summary = await _run(tmp_path, FakeFetcher(behaviour), resolver, fallback=stub)
 
     assert task.complete is True
     assert task.fallback_source_id == "other"
@@ -443,6 +433,7 @@ async def test_skip_existing_can_be_disabled(tmp_path) -> None:
 
 async def test_written_chapter_leaves_no_stale_pages_behind(tmp_path) -> None:
     """A re-download with fewer pages must not leave the old higher numbers."""
+
     async def resolver(_chapter: Chapter) -> list[Page]:
         return _pages(4)
 
@@ -546,9 +537,7 @@ async def test_non_5xx_resolution_failure_still_falls_back(tmp_path) -> None:
     async def resolver(_chapter: Chapter) -> list[Page]:
         raise ValueError("mkzhan: chapter is paywalled/VIP (code 102/103)")
 
-    task, summary = await _run(
-        tmp_path, FakeFetcher(lambda url: b"DATA"), resolver, fallback=stub
-    )
+    task, summary = await _run(tmp_path, FakeFetcher(lambda url: b"DATA"), resolver, fallback=stub)
 
     assert task.server_error is False
     assert task.status == "done" and task.pages_saved == 1

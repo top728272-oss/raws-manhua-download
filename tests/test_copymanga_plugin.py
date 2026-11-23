@@ -73,7 +73,9 @@ def test_clean_ref() -> None:
     assert _clean_ref("勇者處刑") == "勇者處刑"  # a bare query is NOT a ref
     assert _clean_ref("  ") == ""
     # a non-comic URL must NOT be mistaken for a ref (it degrades to a search)
-    assert _clean_ref("https://www.mangacopy.com/search?q=x") == "https://www.mangacopy.com/search?q=x"
+    assert (
+        _clean_ref("https://www.mangacopy.com/search?q=x") == "https://www.mangacopy.com/search?q=x"
+    )
     assert _clean_ref("https://www.mangacopy.com/") == "https://www.mangacopy.com/"
 
 
@@ -106,12 +108,8 @@ def test_join_authors() -> None:
 
 
 def test_set_width() -> None:
-    assert (
-        _set_width("https://x/y/1.jpg.h1500x.webp", 2000) == "https://x/y/1.jpg.h2000x.webp"
-    )
-    assert (
-        _set_width("https://x/y/1.png.c1500x.webp", 800) == "https://x/y/1.png.c800x.webp"
-    )
+    assert _set_width("https://x/y/1.jpg.h1500x.webp", 2000) == "https://x/y/1.jpg.h2000x.webp"
+    assert _set_width("https://x/y/1.png.c1500x.webp", 800) == "https://x/y/1.png.c800x.webp"
     # no size hint -> unchanged
     assert _set_width("https://x/y/1.jpg", 2000) == "https://x/y/1.jpg"
 
@@ -541,9 +539,7 @@ async def test_get_pages_applies_words_order() -> None:
     pages = await plugin.get_pages(_chapter())
 
     # words [2,0,4,1,3] -> contents indices [1,3,0,4,2]
-    assert [_num(p.image_url) for p in pages] == [
-        _num(contents[i]["url"]) for i in (1, 3, 0, 4, 2)
-    ]
+    assert [_num(p.image_url) for p in pages] == [_num(contents[i]["url"]) for i in (1, 3, 0, 4, 2)]
     assert [p.image_url for p in pages] != [c["url"] for c in contents]
 
 
@@ -622,9 +618,7 @@ async def test_real_har_words_ordering() -> None:
     fetcher = AsyncMock()
     fetcher.get_json.return_value = body
     plugin = _plugin(fetcher=fetcher)
-    pages = await plugin.get_pages(
-        _chapter(node["uuid"])
-    )
+    pages = await plugin.get_pages(_chapter(node["uuid"]))
 
     expected = [contents[j] for j in sorted(range(len(contents)), key=lambda i: words[i])]
     assert [p.image_url for p in pages] == expected

@@ -169,9 +169,7 @@ async def test_get_detail_mapping() -> None:
     fetcher.get_json.return_value = _load_fixture("mkzhan_comic_info.json")
     plugin = _plugin(fetcher=fetcher)
 
-    detail = await plugin.get_detail(
-        SearchResult(source_id="mkzhan", title="x", ref="215185")
-    )
+    detail = await plugin.get_detail(SearchResult(source_id="mkzhan", title="x", ref="215185"))
 
     requested = fetcher.get_json.call_args[0][0]
     assert "/comic/info/?comic_id=215185" in requested
@@ -228,9 +226,7 @@ async def test_list_chapters_skips_vip_and_preserves_order() -> None:
     refs = [c.ref for c in chapters]
     assert "999901" not in refs and "999902" not in refs
     assert [c.index for c in chapters] == list(range(1, len(chapters) + 1))
-    assert [c.ref for c in chapters] == [
-        r["chapter_id"] for r in rows if r.get("is_vip") != "1"
-    ]
+    assert [c.ref for c in chapters] == [r["chapter_id"] for r in rows if r.get("is_vip") != "1"]
     assert all(c.manga_ref == "215185" for c in chapters)
     assert all(c.extra["comic_id"] == "215185" for c in chapters)
 
