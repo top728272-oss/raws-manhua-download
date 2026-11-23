@@ -1,0 +1,18 @@
+# --- Core runtime ---
+PySide6>=6.6.0          # GUI (Qt)
+httpx>=0.27.0           # async HTTP client
+curl_cffi>=0.11.0       # TLS impersonation for TLS-gated sources
+PyYAML>=6.0             # config.yaml
+Pillow>=10.0.0          # image conversion (webp -> jpg/png)
+pycryptodome>=3.20.0    # AES-CBC for the ComicBox encrypted-image chunks
+
+# --- Reserved for future JS-heavy sources (manhuagui / Manwaba) ---
+playwright>=1.44.0      # browser fetch path (not used in v1, abstraction ready)
+
+# --- Dev / test ---
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+ruff>=0.3.0
+
+# --- Packaging (dev only) ---
+pyinstaller>=6.0.0      # build .exe

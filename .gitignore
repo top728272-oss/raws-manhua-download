@@ -1,0 +1,9 @@
+.examples/
+# set this up later
+# On-disk cover cache — regenerable, bounded, and never worth committing.
+.cache/
+downloads
+scratch
+__pycache__/
+AGENTS.md
+tests/fixtures

@@ -1,0 +1,201 @@
+# =====================================================================
+# Manhua Raws Downloader - configuration
+# =====================================================================
+
+output_dir: "./downloads"
+default_formats: ["folder"]   # options: folder | cbz
+keep_webp: true
+convert_to: "jpg"                     # used only when keep_webp: false (jpg|png)
+
+download:
+  max_concurrent: 5
+  batch_size: 5
+  retries: 3
+  backoff_seconds: 2
+  # When a source answers HTTP 5xx (or lists 0 pages), the engine looks the same
+  # series up on another enabled source and captures the chapter from there.
+  # A chapter that still ends with 0 images is NEVER written to disk.
+  fallback_enabled: true
+  fallback_min_similarity: 0.7   # 0..1 — title-match confidence required
+  # Skip chapters whose pages are already complete on disk, so re-running a
+  # series (or hitting "select all" by accident) does not download it again.
+  skip_existing: true
+  # After every batch finishes, chapters still missing pages get one more pass:
+  # the missing pages are retried, then requested from another source.
+  recovery_attempts: 3           # attempts per missing page in that pass
+
+network:
+  proxy: ""              # optional proxy URL
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"
+  request_delay_ms: 400
+
+cache:
+  # .cache/covers holds COVERS ONLY — chapter page images are never cached to
+  # disk. Entries are evicted least-recently-used once the cache exceeds this.
+  max_size_mb: 512
+  # Trim the cache on launch. Runs off the UI thread, so it never delays startup.
+  prune_on_startup: true
+
+sources:
+  manhuafree:
+    enabled: true
+    base_url: "https://manhuafree.com"
+    api_host: "https://v2.apikk.top"
+    default_cdn: "https://c-nd2-1.6wm.top"
+  eighteenmhx:
+    enabled: true
+    base_url: "https://m.18mhx.com"
+  hanman18:
+    enabled: true
+    base_url: "https://hanman18.com"
+    image_base_url: "https://azminv2.hanman18.com"
+  guazimanhua:
+    enabled: true
+    base_url: "https://www.guazimanhua.com"
+  comicbox:
+    enabled: true
+    base_url: "https://www.comicbox.xyz"
+    backup_urls:
+      - "https://www.wu55comic.world"
+  jjmhw9:
+    enabled: true
+    # 漫小肆韓漫 — plain server-rendered mirror (no JS, no image scrambling).
+    base_url: "https://www.jjmhw9.top"
+  san3004:
+    enabled: true
+    # 三四娱乐 — WordPress (xiu theme). Chapter N is /post/{id}/page-{N+1}.html.
+    # The ajax search endpoint and the image CDN both require a Referer under a
+    # site domain (an empty User-Agent header is also refused). Domains rotate;
+    # backup_urls is tried before a page fetch is given up on.
+    base_url: "https://www.3004ss.com"
+    backup_urls:
+      - "https://m.3004aa.cc"
+  manhuagui:
+    enabled: true
+    base_url: "https://www.manhuagui.com"
+    image_host: "https://eu1.hamreus.com"
+  tibiu:
+    enabled: true
+    base_url: "https://comic.tibiu.net"
+  wmh1234:
+    enabled: true
+    base_url: "https://www.wmh1234.com"
+    reader_url: "https://reader.hqread.cc"
+  one99mh:
+    # 199mh.org pivoted (2026-10) from page streaming to a Kindle epub store:
+    # search lives at /m/comic/search?q=, series at /comic/<id>, and each
+    # "chapter" is a volume delivered as an epub via POST /m/vol/download_add.
+    # The plugin downloads that epub, unzips it in memory and serves the page
+    # images inside, so downloads still land as normal page folders/CBZ.
+    # Volume downloads REQUIRE a (free) 199mh.org account: set email/password
+    # here, or paste a logged-in browser session as cookie: "k=v; k2=v2".
+    # Search, details and chapter lists work without an account.
+    enabled: true
+    base_url: "https://www.199mh.org"
+    email: ""
+    password: ""
+    cookie: ""
+  manwang:
+    enabled: true
+    base_url: "https://www.manwang.net"
+  mkzhan:
+    enabled: true
+    base_url: "https://www.mkzhan.com"
+    api_base: "https://comic.mkzcdn.com"
+    quality: 3          # image width: 1=800px, 2=1000px, 3=1200px
+    include_vip: false  # skip paid chapters (free-only access)
+  pufeimh:
+    enabled: true
+    base_url: "https://www.pufeimh.com"
+    # Desktop /search always reports 0 hits; only the mobile host renders results,
+    # and only for a mobile User-Agent. The plugin handles both details itself.
+    mobile_url: "https://m.pufeimh.com"
+  jmcomic:
+    enabled: true
+    # 禁漫天堂 (18comic.vip / 18comic.org) — the REAL JM app's mobile API, not the
+    # counterfeit "4.6.3" apps with the sealed backend. Signed requests
+    # (token = md5(ts + app secret), tokenparam = ts,version) and AES-ECB
+    # encrypted responses; paid (收费) albums are served whole with no login.
+    # API domains rotate: the plugin reads the live pool from JM's own
+    # domain-server when the static list dies, and adopts the jm3_version
+    # announced by /setting. Pages come down VERTICALLY SHUFFLED for albums
+    # above their scramble_id — the plugin's fetcher wrapper un-shuffles before
+    # the engine writes them.
+    # app_version: "2.1.7"   # optional pin (else the package default, auto-upgraded)
+    # api_domains: []        # optional host pool override
+    # image_domains: []      # optional CDN pool override (cdn-msp.* hosts)
+  mhua5:
+    enabled: true
+    base_url: "https://www.mhua5.com"
+  kalamanhua:
+    enabled: true
+    # 卡拉漫画 - the plugin solves two gates itself: the main site's omo_token
+    # cookie (parsed live from its 403 interstitial) and the image CDN's
+    # cf_verify token (parsed from the reader challenge page; ~1 day TTL).
+    # Covers need no token, only the site Referer.
+    base_url: "https://www.kalamhw.com"
+    cdn_url: "https://image.kalaimg.top"
+    search_pages: 2        # 9 hits per page; the miss page renders decoy recs
+    source_lines: "first"  # "all" lists every playlist line (G/I/J backups)
+    # Floor for this source's fetcher pacing; the CDN zone runs a real WAF.
+    request_delay_ms: 500
+  nnmh:
+    enabled: true
+    # 楠楠漫画 — domains rotate; the plugin reads the live pool from the portal
+    # page below, probes it, and caches the alive hosts in .cache/nnmh_domains.json
+    # for domain_ttl_hours. Set base_url to pin one domain and skip all that.
+    # base_url: "https://nnmh.cc"
+    portal_url: "https://nnmhcc.github.io/config.YAML"
+    domain_ttl_hours: 6
+    reader_retries: 5   # the reader page sometimes yields an empty blob; re-probed
+    # The image CDN only accepts Referers from a whitelist of family domains.
+    # Verified live: nnmh.cc/info/nnboook.com pass, nnmh.me (also in the pool)
+    # is rejected. Empty = use the current serving domain instead.
+    image_referer_host: "nnmh.cc"
+  copymanga:
+    enabled: true
+    # The public site (mainland mirror: https://www.copy4000.com). Used as the
+    # cover Referer — the site does NOT serve the API (its /api/v3 paths 404),
+    # so this is never contacted by the plugin.
+    base_url: "https://www.mangacopy.com"
+    # The same API runs on two kinds of host: WEB hosts (no signature) and
+    # APP hosts (need the Android app's x-auth-signature, else `code:210`).
+    # The plugin bootstraps from a web host and never touches an app host.
+    # hosts: []             # optional: override the API host list
+    group: "default"        # chapter grouping: default | tankobon
+    page_order: "words"     # words (unscramble via words[]) | contents (raw order)
+    # image_width: 1500     # optional: force the CDN size hint (.c1500x/.h1500x)
+    # token: ""             # optional: account token for locked/VIP chapters
+  hipmh:
+    enabled: true
+    # SSR front end (metadata comes from its JSON-LD - there is no detail API).
+    base_url: "https://m.hipmh.com"
+    reader_base: "https://reader.hipmh.top"
+    # Plain JSON API. No Origin/Referer/cookie/token is required - verified live.
+    api_base: "https://hipapi1.s3file.top"
+    # Page images (WebP, no Referer, unsigned URLs) and covers. The reader also
+    # exposes a "line 2" mirror at hip-cf-1.s3imgs.top if this host ever fails.
+    img_base: "https://hip-tx-1.s3imgs.top"
+    cover_base: "https://cover.s3imgs.top"
+    # Chapter-list pages to walk per series. The API silently clamps per_page to
+    # 50, so a 1200-chapter series costs 24 calls. Capped at 40 internally.
+    chapter_pages: 40
+  mimei:
+    enabled: true
+    # 谜妹漫画 (com.mimei17) — the Android app's own API, reconstructed from the
+    # client: bootstrap pool -> anonymous device register (Bearer token) ->
+    # envelope-encrypted JSON answers. Page images AND covers come down as AES
+    # ciphertext; the plugin decrypts them with the app's libsecrets keys (CV2
+    # on the live chain, the other whitelabel keys tried as fallback). Image
+    # URLs need no Referer and no signature; read() urls are rewritten from the
+    # API host to the pool's image host (tsurl).
+    search_type: 4        # 1 = Japanese doujinshi books, 4 = Chinese-translated
+    #                       # Korean webtoons (韩漫, one comic row per chapter -
+    #                       # any row still expands to the whole series)
+    # server_index: 0        # which comic server pool from bootstrap to use
+    # image_keys: ["CV2"]   # key trial order override (libsecrets dump)
+    # bootstrap_hosts: []   # optional override of the public endpoint pool
+
+logging:
+  level: "INFO"
+  file: "manhua-dl.log"
